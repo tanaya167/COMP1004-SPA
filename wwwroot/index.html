@@ -1,10 +1,73 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="utf-8" />
-    <title></title>
+    <title>Social Network</title>
+    <link rel="stylesheet" type="text/css" href="StyleSheet.css" />
+    <script src="https://code.jquery.com/jquery-3.5.1.js"
+            integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+            crossorigin="anonymous"></script>
+    <script src="js/JavaScript.js"></script>
 </head>
 <body>
-<h1>Welcome</h1>
+    <nav>
+
+        <div class="menu">
+            <ul>
+                <li><a href="#">Account Settings</a></li>
+                <li><a href="#">Privacy Settings</a></li>
+                <li><a href="#">Report an Issue</a></li>
+            </ul>
+        </div>
+    </nav>
+    <h1>Welcome</h1>
+    <h2>Create an Account</h2>
+
+    <h3>User Login</h3>
+    <form>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required />
+        <br />
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required />
+        <br />
+        <button type="submit" onclick="submitForm()">Submit</button>
+    </form>
+    <p id="error-message"></p>
+    <p><a href="#">Forgot Password?</a></p>
+    <script>
+        var attempts = 0;
+        function submitForm() {
+            var email = document.getElementById("email").value;
+            var password = document.getElementById("password").value;
+            if (password.length < 8 || !/\d/.test(password) || /\W/.test(password)) {
+                document.getElementById("error-message").textContent = "Password must be at least 8 characters long and contain at least 1 number and no symbols.";
+                return false;
+            }
+            // code to check email and password against database
+            // if correct, redirect user to home page
+            // if incorrect, display error messageand block user after 3 attempts
+
+            attempt++;
+            if (attempts >= 3) {
+                document.getElementById("error-message").textContent = "You have exceeded the maximum number of attempts. Please try again in 1 hour.";
+                document.getElementById("email").disabled = true;
+                document.getElementById("password").disabled = true;
+                setTimeout(function () {
+                    document.getElementById("error-message").textContent = "";
+                    document.getElementById("email").disabled = false;
+                    document.getElementById("password").disabled = false;
+                    attempts = 0;
+                }, 3600000); // 1 hour in milliseconds
+            } else {
+                document.getElementById("error-message").textContent = "Incorrect email or password. Please try again.";
+            }
+            return false;
+        }
+    </script>
 </body>
+
 </html>
+
+
