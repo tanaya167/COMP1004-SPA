@@ -9,20 +9,24 @@
             integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
             crossorigin="anonymous"></script>
     <script src="js/JavaScript.js"></script>
-   
+
     <style>
-        body { 
+        body {
             background-color: lightgrey;
             color: black;
         }
+
         h1 {
             text-align: center;
             margin-top: 50px;
         }
-        .settings {
-            display: none;
-        }
     </style>
+    <script>
+        function showResetPasswordForm() {
+            document.getElementById("user-login-form").style.display = "none";
+            document.getElementById("reset-password-form").style.display = "block";
+        }
+    </script>
 </head>
 <body>
     <nav>
@@ -33,29 +37,24 @@
                 <li><a href="#" id="report-issue-link">Report an Issue</a></li>
             </ul>
         </div>
-           
-        
     </nav>
     <div class="settings" id="account-settings">
-        <div id="account-settings-content" style="display: none;">
-            <button id="personal-information-button">Personal information</button>
-            <button id="username-button">Username</button>
-            <button id="password-button">Password</button>
-            <button id="delete-account-button">Delete Account</button>
-        </div>
-        <div class="settings" id="privacy-settings">
-            <button id="privacy-policy-button">Privacy Policy</button>
-            <button id="terms-of-service-button">Terms of service</button>
-            <button id="Account-private-public-button">Account-Private/Public</button>
-
-        </div>
-        <div class="settings" id="report-issue">
-            <button id="safety-concern-button">Safety Concern</button>
-            <button id="privacy-question-button">Privacy Question</button>
-            <button id="other-issue-button">Other Issue</button>
-
-        </div>
+        <button id="personal-information-button">Personal information</button>
+        <button id="username-button">Username</button>
+        <button id="password-button">Password</button>
+        <button id="delete-account-button">Delete Account</button>
     </div>
+    <div class="settings" id="privacy-settings">
+        <button id="privacy-policy-button">Privacy Policy</button>
+        <button id="terms-of-service-button">Terms of service</button>
+        <button id="Account-private-public-button">Account-Private/Public</button>
+    </div>
+    <div class="settings" id="report-issue">
+        <button id="safety-concern-button">Safety Concern</button>
+        <button id="privacy-question-button">Privacy Question</button>
+        <button id="other-issue-button">Other Issue</button>
+    </div>
+
     <script>
         const accountSettingsLink = document.getElementById('account-settings-link');
         const privacySettingsLink = document.getElementById('privacy-settings-link');
@@ -72,6 +71,7 @@
             } else {
                 accountSettings.style.display = 'none';
             }
+
         });
 
         privacySettingsLink.addEventListener('click', function (event) {
@@ -81,6 +81,7 @@
             } else {
                 privacySettings.style.display = 'none';
             }
+
         });
 
         reportIssueLink.addEventListener('click', function (event) {
@@ -90,37 +91,51 @@
             } else {
                 reportIssue.style.display = 'none';
             }
+
         });
     </script>
     <h1>Welcome to My Social Network</h1>
-    <h2>Create an Account</h2>
+   
+    <div id="user-login-form">
+        <h3>User Login</h3>
+        <form>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <br>
+            <button type="submit" onclick="submitForm()">Submit</button>
+            <a href="#" onclick="showResetPasswordForm()">Forgot Password?</a>
+        </form>
+        <p id="error-message"></p>
+    </div>
+    <div id="reset-password-form" style="display:none;">
+        <h2>Reset Password</h2>
+        <form action="reset_password.php" method="POST">
+            <label>Enter your email address:</label>
+            <input type="email" name="email" required><br><br>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
 
-    <h3>User Login</h3>
-    <form>
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required />
-        <br />
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required />
-        <br />
-        <button type="submit" onclick="submitForm()">Submit</button>
-    </form>
-    <p id="error-message"></p>
-    <p><a href="#">Forgot Password?</a></p>
+
     <script>
         var attempts = 0;
         function submitForm() {
             var email = document.getElementById("email").value;
             var password = document.getElementById("password").value;
+
             if (password.length < 8 || !/\d/.test(password) || /\W/.test(password)) {
                 document.getElementById("error-message").textContent = "Password must be at least 8 characters long and contain at least 1 number and no symbols.";
                 return false;
             }
+
             // code to check email and password against database
             // if correct, redirect user to home page
-            // if incorrect, display error messageand block user after 3 attempts
+            // if incorrect, display error message and block user after 3 attempts
 
-            attempt++;
+            attempts++;
             if (attempts >= 3) {
                 document.getElementById("error-message").textContent = "You have exceeded the maximum number of attempts. Please try again in 1 hour.";
                 document.getElementById("email").disabled = true;
