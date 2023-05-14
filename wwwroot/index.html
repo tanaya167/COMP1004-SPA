@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="utf-8" />
-    <title>Social Network</title>
+    <title>Comp1004</title>
     <link rel="stylesheet" type="text/css" href="StyleSheet.css" />
     <script src="https://code.jquery.com/jquery-3.5.1.js"
             integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
@@ -94,65 +94,115 @@
 
         });
     </script>
-    <h1>Welcome to My Social Network</h1>
-   
-    <div id="user-login-form">
-        <h3>User Login</h3>
-        <form>
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-            <br>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-            <br>
-            <button type="submit" onclick="submitForm()">Submit</button>
-            <a href="#" onclick="showResetPasswordForm()">Forgot Password?</a>
-        </form>
-        <p id="error-message"></p>
-    </div>
-    <div id="reset-password-form" style="display:none;">
-        <h2>Reset Password</h2>
-        <form action="reset_password.php" method="POST">
-            <label>Enter your email address:</label>
-            <input type="email" name="email" required><br><br>
-            <input type="submit" value="Submit">
-        </form>
-    </div>
+    <h1> Comp1004-Social Network</h1>
 
+    <form id="login-form">
+        <label for="email">Email:</label>
+        <input type="email" id="email" required>
+        <label for="password">Password:</label>
+        <input type="password" id="password" required>
+        <p id="password-validation-msg" style="display:none;">Password must be at least 8 characters long and contain at least 1 number and no symbols.</p>
+        <button type="submit" id="login-btn">Login</button>
+    </form>
+    <form id="password-reset-form" style="display: none;">
+        <label for="reset-email">Email:</label>
+        <input type="email" id="reset-email" name="reset-email" required />
+        <button type="submit">Reset Password</button>
+    </form>
+    
+    <p>Dear user,</p>
+    <p>Please click the following link to reset your password:</p>
+    <p><a data-qtip="https://example.com/reset-password?token={{resetToken}}" href="https://example.com/reset-password?token={{resetToken}}">Reset Password</a></p>
+    <p>If you did not request a password reset, please ignore this email.</p>
 
+  
+    <div id="content" style="display:none;">
+        <h2>You are now logged in!</h2>
+        <p>Welcome to our website.</p>
+    </div>
     <script>
-        var attempts = 0;
-        function submitForm() {
-            var email = document.getElementById("email").value;
-            var password = document.getElementById("password").value;
+        
+        document.getElementById('login-btn').addEventListener('click', function (event) {
+            event.preventDefault(); 
 
-            if (password.length < 8 || !/\d/.test(password) || /\W/.test(password)) {
-                document.getElementById("error-message").textContent = "Password must be at least 8 characters long and contain at least 1 number and no symbols.";
-                return false;
-            }
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
 
-            // code to check email and password against database
-            // if correct, redirect user to home page
-            // if incorrect, display error message and block user after 3 attempts
-
-            attempts++;
-            if (attempts >= 3) {
-                document.getElementById("error-message").textContent = "You have exceeded the maximum number of attempts. Please try again in 1 hour.";
-                document.getElementById("email").disabled = true;
-                document.getElementById("password").disabled = true;
-                setTimeout(function () {
-                    document.getElementById("error-message").textContent = "";
-                    document.getElementById("email").disabled = false;
-                    document.getElementById("password").disabled = false;
-                    attempts = 0;
-                }, 3600000); // 1 hour in milliseconds
+            
+            const passwordRegex = /^(?=.*[0-9])[a-zA-Z0-9]{8,}$/; 
+            const passwordIsValid = passwordRegex.test(password);
+            const passwordValidationMsg = document.getElementById('password-validation-msg');
+            if (!passwordIsValid) {
+                passwordValidationMsg.style.display = 'block'; 
+                return;
             } else {
-                document.getElementById("error-message").textContent = "Incorrect email or password. Please try again.";
+                passwordValidationMsg.style.display = 'none'; 
             }
-            return false;
-        }
+
+            
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/login');
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    
+                    const contentDiv = document.getElementById('content');
+                    contentDiv.style.display = 'block'; 
+                    document.getElementById('login-form').reset(); 
+                } else {
+                   
+                    alert('Invalid email or password.');
+                }
+            };
+            xhr.send(JSON.stringify({ email, password }));
+        });
     </script>
+    <script>
+        const forgotPasswordLink = document.querySelector("#forgot-password-link");
+        const passwordResetForm = document.querySelector("#password-reset-form");
+
+        forgotPasswordLink.addEventListener("click", (event) => {
+            event.preventDefault();
+            passwordResetForm.style.display = "block";
+        });
+    </script>
+    <script>
+       
+        app.post("/reset-password", (req, res) => {
+            const { email } = req.body;
+
+            
+            if (!isValidEmail(email)) {
+                res.status(400).json({ error: "Invalid email address" });
+                return;
+            }
+
+            
+            const token = generateResetToken();
+
+           
+            redisClient.set(token, email);
+
+           
+            sendResetEmail(email, token);
+
+            
+            res.json({ message: "Password reset email sent" });
+        });
+    </script>
+    <script>
+       
+        const resetPasswordForm = document.querySelector("#reset-password-form");
+
+       
+        const urlParams = new URLSearchParams(window.location.search);
+        const resetToken = urlParams.get("token");
+
+        if (!isValidResetToken(resetToken)) {
+            alert("Invalid or expired password reset token");
+            window.location.href = "/login"; 
+    </script>
+
 </body>
 </html>
-
 
